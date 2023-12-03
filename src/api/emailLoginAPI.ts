@@ -1,5 +1,6 @@
 import axios from "axios";
 import { TLoginFormData } from "../type/emailLogin";
+import { errorMsg } from "../utils/errorMsgAlert";
 
 export const signInWithEmail = async (data: TLoginFormData): Promise<any> => {
   try {
@@ -7,8 +8,11 @@ export const signInWithEmail = async (data: TLoginFormData): Promise<any> => {
       loginEmail: data.email,
       password: data.password,
     });
-    return response.data;
+    return response;
   } catch (error) {
-    throw error;
+    if (axios.isAxiosError(error)) {
+      const errorCode = error.response?.data.errorCode;
+      errorMsg(errorCode);
+    }
   }
 };

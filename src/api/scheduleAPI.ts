@@ -1,29 +1,31 @@
 import axios from "axios";
-import { getCookie, removeCookie } from "../utils/cookie";
-import { refreshTokenAPI } from "./shareRoomAPI";
 import Swal from "sweetalert2";
+import { getCookie } from "../utils/cookie";
+import { checkTokenAPI, refreshTokenAPI } from "./tokenAPI";
+import { errorMsg } from "../utils/errorMsgAlert";
 
 export const getScheduleAPI = async (shareRoomID: number) => {
-  const id = Number(shareRoomID);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
 
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
-    const response = await axios.get(`/api/api/share-room/${id}/schedule`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `/api/api/share-room/${shareRoomID}/schedule`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorCode = error.response?.data.errorCode;
-      if (errorCode === "EXPIRED_ACCESS_TOKEN") {
-        removeCookie("accessToken");
-        refreshTokenAPI();
-        getScheduleAPI(shareRoomID);
-      }
+      errorMsg(errorCode);
     }
   }
 };
@@ -32,6 +34,13 @@ export const getScheduleByDateAPI = async (
   shareRoomID: number,
   planDate: string
 ) => {
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
+
   try {
     const response = await axios.get(
       `/api/api/share-room/${shareRoomID}/schedule/plan?date=${planDate}`
@@ -40,14 +49,18 @@ export const getScheduleByDateAPI = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorCode = error.response?.data.errorCode;
-      console.log(errorCode);
+      errorMsg(errorCode);
     }
   }
 };
 
 export const completeScheduleAPI = async (shareRoomID: number) => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.delete(
@@ -63,16 +76,7 @@ export const completeScheduleAPI = async (shareRoomID: number) => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorCode = error.response?.data.errorCode;
-      if (errorCode === "EXPIRED_ACCESS_TOKEN") {
-        removeCookie("accessToken");
-        refreshTokenAPI();
-        completeScheduleAPI(shareRoomID);
-      } else if (errorCode === "NOT_MATCH_CREATE_MEMBER") {
-        Swal.fire({
-          icon: "error",
-          text: "공유방 생성자가 아닙니다.",
-        });
-      }
+      errorMsg(errorCode);
     }
   }
 };
@@ -87,8 +91,12 @@ export const addSchedultMemoAPI = async (
   memberID: number,
   form: IForm
 ) => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.post(
@@ -109,6 +117,9 @@ export const addSchedultMemoAPI = async (
       });
     }
   } catch (error) {
-    console.log(error);
+    if (axios.isAxiosError(error)) {
+      const errorCode = error.response?.data.errorCode;
+      errorMsg(errorCode);
+    }
   }
 };

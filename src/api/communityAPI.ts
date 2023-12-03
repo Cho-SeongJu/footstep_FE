@@ -1,23 +1,29 @@
 import axios from "axios";
-import { getCookie } from "../utils/cookie";
 import {
   ICommentCreateForm,
   ICommentUpdateForm,
-  ICommunityData,
   IGetCommunityParams,
 } from "../type/communityPage";
-import { refreshTokenAPI } from "./shareRoomAPI";
+import { getCookie } from "../utils/cookie";
 
-export const getCommunityAPI = async (
-  params?: IGetCommunityParams
-): Promise<ICommunityData> => {
+export const getCommunityAPI = async (params?: IGetCommunityParams) => {
   const KEY = "accessToken";
   let token = getCookie(KEY);
 
-  const config = {
-    params,
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  };
+  let config = {};
+
+  if (token) {
+    config = {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  } else {
+    config = {
+      params,
+    };
+  }
 
   try {
     const response = await axios.get("/api/api/community", config);
@@ -25,15 +31,7 @@ export const getCommunityAPI = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        await refreshTokenAPI();
-        token = getCookie(KEY);
-        config.headers = token
-          ? { Authorization: `Bearer ${token}` }
-          : undefined;
-        const response = await axios.get("/api/api/community", config);
-        return response.data;
-      }
+      console.log(responseErrorCode);
     }
   }
   return { communities: [], lastPage: false };
@@ -60,10 +58,7 @@ export const createComment = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        refreshTokenAPI();
-        createComment(form, memberId);
-      }
+      console.log(responseErrorCode);
     }
   }
 };
@@ -85,10 +80,7 @@ export const updateComment = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        refreshTokenAPI();
-        updateComment(commentId, form);
-      }
+      console.log(responseErrorCode);
     }
   }
 };
@@ -107,10 +99,7 @@ export const deleteComment = async (commentId: number) => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        refreshTokenAPI();
-        deleteComment(commentId);
-      }
+      console.log(responseErrorCode);
     }
   }
 };

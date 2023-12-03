@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export const scheduleMarkerState = atom({
+export const scheduleMarkerState = atom<boolean>({
   key: "scheduleMarkerState",
-  default: false,
+  default: true,
 });

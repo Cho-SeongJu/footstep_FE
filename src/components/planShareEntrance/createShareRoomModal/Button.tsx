@@ -20,6 +20,7 @@ const Button = ({ form }: IProps) => {
   const MySwal = withReactContent(Swal);
 
   const onClickCreateHandler = async () => {
+    console.log(form);
     if (!formValidationCheck(form)) return;
 
     const response = await createShareRoomAPI(form);
@@ -27,6 +28,7 @@ const Button = ({ form }: IProps) => {
     if (response?.status === 200) {
       const shareRoomId = response.data.shareId;
       const planList = response.data;
+      console.log(planList);
 
       MySwal.fire({
         title: "등록이 완료되었습니다.",
@@ -40,7 +42,10 @@ const Button = ({ form }: IProps) => {
       }).then((result) => {
         result.isConfirmed
           ? navigate(`/planShareRoom/${shareRoomId}`)
-          : setShareRooms([...shareRooms, planList]);
+          : setShareRooms({
+              ...shareRooms,
+              shareRoomDtoList: [...shareRooms.shareRoomDtoList, planList],
+            });
       });
     } else {
       MySwal.fire({

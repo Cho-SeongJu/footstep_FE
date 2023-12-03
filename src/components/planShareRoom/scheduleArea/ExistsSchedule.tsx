@@ -3,12 +3,12 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Swal from "sweetalert2";
 import { ReactComponent as Close } from "../../../assets/close.svg";
 import { ReactComponent as Flag } from "../../../assets/flag.svg";
-import useManageSchedule from "../../../hooks/useManageSchdule";
+import useSchdule from "../../../hooks/useSchdule";
 import { disabledState } from "../../../state/componentOpenState";
 import { scheduleMarkerState } from "../../../state/scheduleMarkerState";
 import { selecteStartPoint } from "../../../state/selectStartPoint";
 import { sideBarState } from "../../../state/sidebarState";
-import { schedule } from "../../../store/schedule";
+import { scheduleList } from "../../../store/scheduleList";
 import { selectedDay } from "../../../store/selectedDay";
 import ScheduleMemo from "./ScheduleMemo";
 
@@ -23,14 +23,14 @@ interface IDestination {
 }
 
 const ExistsSchedule = () => {
-  const scheduleBytDate = useRecoilValue(schedule);
   const selectedDate = useRecoilValue(selectedDay);
+  const schedules = useRecoilValue(scheduleList);
   const setStartPoint = useSetRecoilState(selecteStartPoint);
   const [openScheduleMarkerState, setOpenScheduleMarkerState] =
     useRecoilState(scheduleMarkerState);
   const [disabledStatus, setDisabledStatus] = useRecoilState(disabledState);
   const [sideBarOpenState, setSidebarOpenState] = useRecoilState(sideBarState);
-  const { deleteDestination } = useManageSchedule();
+  const { deleteDestination } = useSchdule();
   const [selectStartPoint, setSelecteStartPoint] = useState(false);
   const [openMemo, setOpenMemo] = useState<boolean>(false);
 
@@ -42,6 +42,7 @@ const ExistsSchedule = () => {
       buttonSection: !disabledStatus.buttonSection,
       placeSection: !disabledStatus.placeSection,
       memo: !disabledStatus.memo,
+      showScheduleRoute: !disabledStatus.showScheduleRoute,
     });
     setSelecteStartPoint(!selectStartPoint);
   };
@@ -55,6 +56,7 @@ const ExistsSchedule = () => {
       scheduleList: !disabledStatus.scheduleList,
       buttonSection: !disabledStatus.buttonSection,
       placeSection: !disabledStatus.placeSection,
+      showScheduleRoute: !disabledStatus.showScheduleRoute,
     });
   };
 
@@ -74,6 +76,7 @@ const ExistsSchedule = () => {
           buttonSection: !disabledStatus.buttonSection,
           placeSection: !disabledStatus.placeSection,
           memo: !disabledStatus.memo,
+          showScheduleRoute: !disabledStatus.showScheduleRoute,
         });
 
         setStartPoint({
@@ -139,12 +142,17 @@ const ExistsSchedule = () => {
           </button>
           {openMemo && <ScheduleMemo setOpenMemo={setOpenMemo} />}
         </div>
-        <div className="relative flex items-center z-[1005]">
+        <div
+          className={`relative flex items-center ${
+            disabledStatus.showScheduleRoute ? "z-[1003]" : "z-[1005]"
+          }`}
+        >
           <input
             id="scheduleMarker"
             type="checkbox"
             className="ml-4"
             onClick={onClickScheduleMarkerHandler}
+            defaultChecked={openScheduleMarkerState}
           />
           <label
             htmlFor="scheduleMarker"
@@ -162,47 +170,49 @@ const ExistsSchedule = () => {
           !disabledStatus.scheduleList ? "z-[1005]" : "z-[1003]"
         }`}
       >
-        {scheduleBytDate !== "" &&
-          scheduleBytDate.destinationDtoList.map((destination) => (
-            <div
-              key={destination.destinationId}
-              className="flex items-center"
-            >
-              {selectStartPoint && (
-                <button
-                  className="mt-4 mr-2 text-sm text-black-003 hover:text-blue-001 cursor-pointer"
-                  onClick={() => onClickSelectHandler(destination)}
-                  type="button"
-                >
-                  선택
-                </button>
-              )}
+        {schedules[selectedDate.planDay - 1].destinationDtoList.length !== 0 &&
+          schedules[selectedDate.planDay - 1].destinationDtoList.map(
+            (destination: any) => (
               <div
                 key={destination.destinationId}
-                className="relative mt-4 px-3 py-4 w-[17rem] bg-white border border-gray-003 rounded-md shadow-md"
+                className="flex items-center"
               >
-                <p className="text-[1.2rem] font-[500]">
-                  {destination.destinationName}
-                </p>
-                <p className="mt-1 text-[0.8rem] font-light">
-                  {destination.destinationAddress}
-                </p>
-                <div>
-                  {!selectStartPoint && (
-                    <button
-                      type="button"
-                      className="absolute top-3 right-3 w-[10px] h-[10px]"
-                      onClick={() =>
-                        onClickDeletePlaceHandler(destination.destinationId)
-                      }
-                    >
-                      <Close className="w-[10px] h-[10px] fill-red-001" />
-                    </button>
-                  )}
+                {selectStartPoint && (
+                  <button
+                    className="mt-4 mr-2 text-sm text-black-003 hover:text-blue-001 cursor-pointer"
+                    onClick={() => onClickSelectHandler(destination)}
+                    type="button"
+                  >
+                    선택
+                  </button>
+                )}
+                <div
+                  key={destination.destinationId}
+                  className="relative mt-4 px-3 py-4 w-[17rem] bg-white border border-gray-003 rounded-md shadow-md"
+                >
+                  <p className="text-[1.2rem] font-[500]">
+                    {destination.destinationName}
+                  </p>
+                  <p className="mt-1 text-[0.8rem] font-light">
+                    {destination.destinationAddress}
+                  </p>
+                  <div>
+                    {!selectStartPoint && (
+                      <button
+                        type="button"
+                        className="absolute top-3 right-3 w-[10px] h-[10px]"
+                        onClick={() =>
+                          onClickDeletePlaceHandler(destination.destinationId)
+                        }
+                      >
+                        <Close className="w-[10px] h-[10px] fill-red-001" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
       </div>
     </div>
   );

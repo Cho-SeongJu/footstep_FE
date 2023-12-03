@@ -1,13 +1,16 @@
 import axios from "axios";
 import { getCookie } from "../utils/cookie";
-import { refreshTokenAPI } from "./shareRoomAPI";
+import { checkTokenAPI, refreshTokenAPI } from "./tokenAPI";
 
 export const getMemberByAccessToken = async (): Promise<any> => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
-
+  let token = getCookie("accessToken");
   if (!token) {
     return null;
+  }
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
   }
 
   const config = token
@@ -19,11 +22,7 @@ export const getMemberByAccessToken = async (): Promise<any> => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        await refreshTokenAPI();
-        return getMemberByAccessToken();
-      }
+      console.log(error);
     }
     throw error;
   }

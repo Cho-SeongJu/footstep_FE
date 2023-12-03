@@ -3,21 +3,9 @@ import { sideBarState } from "../../state/sidebarState";
 import SideBarToggle from "./SideBarToggle";
 import PlaceSearchArea from "./placeSearchArea/PlaceSearchArea";
 import ScheduleArea from "./scheduleArea/ScheduleArea";
-import { IPlace } from "../../hooks/useManageSchdule";
+import { IPropsSideBar } from "../../type/planShareRoom";
 
-interface IPropsSideBar {
-  placeSearch: (keyword: string) => void;
-  panTo: (placeX: number, placeY: number, index: number) => void;
-  placePagination: any;
-  addDestination: (place: IPlace) => void;
-}
-
-const SideBar = ({
-  placeSearch,
-  panTo,
-  placePagination,
-  addDestination,
-}: IPropsSideBar) => {
+const SideBar = ({ placeSearch, panTo, placePagination }: IPropsSideBar) => {
   const sideBarOpenState = useRecoilValue(sideBarState);
 
   return (
@@ -28,7 +16,6 @@ const SideBar = ({
         placeSearch={placeSearch}
         panTo={panTo}
         placePagination={placePagination}
-        addDestination={addDestination}
       />
     </div>
   );

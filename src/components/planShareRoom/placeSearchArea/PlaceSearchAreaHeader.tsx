@@ -1,4 +1,4 @@
-import { IPropsPlaceSearch } from "../../../type/shareRoom";
+import { IPropsPlaceSearch } from "../../../type/planShareRoom";
 import PlaceSearchBar from "./PlaceSearchBar";
 import PlaceSearchCategory from "./PlaceSearchCategory";
 import PlaceSearchTitle from "./PlaceSearchTitle";

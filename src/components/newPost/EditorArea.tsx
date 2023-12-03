@@ -5,19 +5,17 @@ import { useEffect } from "react";
 import { getCookie } from "../../utils/cookie";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import HeaderContainer from "../common/header/HeaderContainer";
-import Footer from "../common/footer/Footer";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 const EditorArea = () => {
+  const { checkLocationPath } = useRequireAuth();
+
   const {
-    // title,
     setTitle,
     content,
     setContent,
-    // isPublic,
     setIsPublic,
     selectedPlan,
-    // setSelectedPlan,
     plans,
     handleSelectPlan,
     submitPost,
@@ -36,6 +34,8 @@ const EditorArea = () => {
       });
       navigate("/community");
     }
+
+    checkLocationPath();
   }, []);
 
   const submitPostWithConfirmation = async () => {
@@ -51,7 +51,6 @@ const EditorArea = () => {
     if (result.isConfirmed) {
       const postResult = await submitPost();
       if (postResult) {
-        // submitPost이 true일 때만 게시글 등록 성공 알림 표시
         Swal.fire("성공!", "게시글이 정상적으로 등록되었습니다", "success");
         navigate("/community");
       }
@@ -62,9 +61,8 @@ const EditorArea = () => {
 
   return (
     <>
-      <HeaderContainer />
-      <div className="min-h-screen pt-[142px] p-8 bg-sky-004">
-        <div className="p-8 mb-8 rounded-lg bg-white-001">
+      <div className="mx-auto md:w-[50rem] lg:w-[55rem] min-h-screen pt-[3rem] md:p-8">
+        <div className="p-4 md:p-8 mb-8 rounded-lg bg-white-001">
           <h2 className="mb-4 pb-4 w-full border-b-2 text-2xl font-bold text-blue-003">
             새 게시글 작성
           </h2>
@@ -73,7 +71,7 @@ const EditorArea = () => {
               value={selectedPlan ? selectedPlan.shareName : ""}
               onChange={(e) => {
                 const selectedPlanName = e.target.value;
-                const selectedPlan = plans.find(
+                const selectedPlan = plans.shareRoomDtoList.find(
                   (plan) => plan.shareName === selectedPlanName
                 );
                 if (selectedPlan) {
@@ -83,8 +81,11 @@ const EditorArea = () => {
               className="w-full p-2 mb-4 border-2 border-gray-002 rounded-md"
             >
               <option value="">일정을 선택해주세요</option>
-              {plans.map((plan) => (
-                <option key={plan.shareId} value={plan.shareName}>
+              {plans.shareRoomDtoList.map((plan) => (
+                <option
+                  key={plan.shareId}
+                  value={plan.shareName}
+                >
                   {plan.shareName}
                 </option>
               ))}
@@ -92,9 +93,9 @@ const EditorArea = () => {
           </div>
           <input
             type="text"
-            placeholder="Title"
+            placeholder="제목을 입력하세요."
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 mb-4 border-2 border-gray-002 rounded-md"
+            className="w-full pl-4 py-3 mb-4 border-2 border-gray-002 rounded-md placeholder:text-sm"
           />
           <label className="flex items-center ml-2 mb-4">
             <input
@@ -116,9 +117,32 @@ const EditorArea = () => {
               onReady={(editor: any) => {
                 editor.ui.view.editable.element.style.height = "400px";
               }}
+              config={{
+                removePlugins: [
+                  "Image",
+                  "Table",
+                  "MediaEmbed",
+                  "CKFinder",
+                  "ImageCaption",
+                  "ImageStyle",
+                  "ImageToolbar",
+                  "ImageUpload",
+                  "Link",
+                  "Autoformat",
+                  "BlockQuote",
+                  "Heading",
+                  "List",
+                  "Indent",
+                  "PasteFromOffice",
+                  "TextTransformation",
+                  "CKBox",
+                  "EasyImage",
+                  "UploadAdapter",
+                ],
+              }}
             />
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-40">
             <button
               onClick={submitPostWithConfirmation}
               className="p-2 rounded bg-blue-003 text-white"
@@ -128,7 +152,6 @@ const EditorArea = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

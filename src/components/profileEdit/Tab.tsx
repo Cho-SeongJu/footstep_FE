@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const Tab = () => {
-  const [selected, setSelected] = useState("profileEdit");
+  const location = useLocation();
+  const [selected, setSelected] = useState("");
 
   const tabs = [
     {
@@ -22,16 +23,23 @@ const Tab = () => {
     },
   ];
 
+  useEffect(() => {
+    const currentTab = tabs.find((tab) => tab.path === location.pathname);
+    if (currentTab) {
+      setSelected(currentTab.menu);
+    }
+  }, [location.pathname]);
+
   const onClickHandler = (menu: string) => {
     setSelected(menu);
   };
 
   return (
-    <div className="flex justify-center items-center w-full border-y border-gray-003">
+    <div className="flex justify-center items-center w-full border-b border-gray-003">
       {tabs.map((tab) => (
         <Link
           key={tab.menu}
-          className={`mx-2 px-2 py-4 text-md ${
+          className={`mx-2 px-2 py-4 md:text-base text-sm ${
             selected === tab.menu &&
             "border-b-[0.2rem] border-blue-002 text-blue-002 text-lg font-bold"
           } hover:text-blue-002`}

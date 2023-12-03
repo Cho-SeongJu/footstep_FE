@@ -5,7 +5,7 @@ import { ReactComponent as BottomArrow } from "../../../assets/bottomArrow.svg";
 import usePlanDate from "../../../hooks/usePlanDate";
 import { useEffect } from "react";
 import { ISelectedDate } from "../../../type/shareRoomForm";
-import { IShareRoom } from "../../../type/shareRoom";
+import { IShareRoom } from "../../../type/planShareRoom";
 
 interface IProps {
   type: string;
@@ -38,14 +38,14 @@ const Calendar = ({
   return (
     <div className="relative z-[1003]">
       <div
-        className={`flex items-center mt-6 w-[19rem] h-[3.5rem] ${
+        className={`flex items-center mt-6 sm:w-[19rem] w-full h-[3.5rem] ${
           editStatus ? "bg-white" : "bg-gray-006"
         } border border-gray-006 rounded-sm shadow-sm`}
         onClick={onClickDateCalendar}
         role="presentation"
       >
         <CalendarIcon className="mx-4 w-[28px] h-[28px]" />
-        <div className="grow flex justify-center mx-4 font-normal text-gray-002 text-md">
+        <div className="grow flex justify-center mx-4 font-normal text-gray-002 sm:text-base text-[0.63rem]">
           <p className="grow">
             {isSelected
               ? `${selectedDate.printStartDate} ~ ${selectedDate.printEndDate}`

@@ -5,6 +5,7 @@ export interface ICommunityPost {
   communityName: string;
   content: string;
   createdDate: string;
+  liked: boolean;
   likeCount: number;
   memberId: number;
   memberNickname: string;
@@ -13,19 +14,22 @@ export interface ICommunityPost {
   communityPublicState: boolean;
 }
 
+export interface ICommunity {
+  communities: ICommunityPost[];
+  totalPages: number;
+}
+
 export interface ICommunityData {
   communities: ICommunityPost[];
   lastPage: boolean;
 }
 
-export interface IListsProps {
-  searchQuery: string;
-}
-
 export interface IGetCommunityParams {
-  page?: number;
-  size?: number;
-  sort?: string;
+  keyword: string;
+  page: number;
+  size: number;
+  type: string;
+  sort: string;
 }
 
 export interface ICommentCreateForm {
@@ -45,6 +49,7 @@ export interface ICommentUpdateForm {
 }
 
 export interface ILikeProps {
+  isLiked: boolean;
   communityId: number;
   initialLikeCount: number;
 }

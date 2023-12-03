@@ -2,27 +2,27 @@ import { useRecoilValue } from "recoil";
 import { recommendPlaceList } from "../../../store/recommendPlaceList";
 import { placeSearchResult } from "../../../store/placeSearchResult";
 import { ReactComponent as Address } from "../../../assets/address.svg";
+import useSchedule from "../../../hooks/useSchdule";
 
 interface IPlace {
-  addressName: string;
-  placeName: string;
-  x: number;
-  y: number;
+  readonly addressName: string;
+  readonly placeName: string;
+  readonly x: number;
+  readonly y: number;
 }
 
 interface IProps {
-  addDestination: (place: IPlace) => void;
-  panTo: (placeX: number, placeY: number, index: number) => void;
+  readonly panTo: (placeX: number, placeY: number, index: number) => void;
 }
 
-const PlaceRecommendList = ({ addDestination, panTo }: IProps) => {
+const PlaceRecommendList = ({ panTo }: IProps) => {
+  const { addDestination } = useSchedule();
   const recommendPlaces = useRecoilValue(recommendPlaceList);
   const placeSearchList = useRecoilValue(placeSearchResult);
 
   const isExist = recommendPlaces.length !== 0;
 
   const onClickAddPlaceHandler = (place: IPlace) => {
-    console.log(place);
     addDestination({
       placeName: place.placeName,
       addressName: place.addressName,

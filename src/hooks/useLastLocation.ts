@@ -8,7 +8,7 @@ export const useLastLocation = () => {
 
   const saveLastLocation = () => {
     setLastLocation(location.pathname);
-    sessionStorage.setItem("lastLocation", location.pathname); // sessionStorage에 저장
+    sessionStorage.setItem("lastLocation", location.pathname);
   };
 
   return saveLastLocation;

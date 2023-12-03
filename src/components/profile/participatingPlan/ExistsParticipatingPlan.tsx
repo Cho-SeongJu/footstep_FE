@@ -1,37 +1,44 @@
 import { ReactComponent as RightArrow } from "../../../assets/rightArrow.svg";
 import testImage from "../../../assets/temporary/nature-6517866_1920.jpg";
 import { Link } from "react-router-dom";
-import { useSharedRoom } from "../../../hooks/useMyShareRoom";
+import { useRecoilValue } from "recoil";
+import { getShareRoomList } from "../../../store/getShareRoomList";
 
 const ExistsParticipatingPlan = () => {
-  const { plans } = useSharedRoom();
+  const plans = useRecoilValue(getShareRoomList);
 
   return (
-    <div className="w-[55rem] h-[40rem] border border-black-003 rounded-xl overflow-y-scroll">
-      {plans.map((plan) => (
+    <div className="w-full px-2 md:px-0 xl:w-[58rem] lg:w-[38rem] md:w-[30rem] h-[40rem] overflow-auto">
+      {plans.shareRoomDtoList.map((plan) => (
         <Link
           key={plan.shareId}
           to={`/planShareRoom/${plan.shareId}`}
-          className="group flex mx-auto my-8 w-[47rem] h-[9rem] border border-gray-003 rounded-xl cursor-pointer"
+          className="group flex flex-col md:flex-row mx-auto md:mx-0 my-8 xl:w-[55rem] lg:w-[35rem] md:w-[27rem] w-[17rem] h-[30rem] xl:h-[13rem] lg:h-[11rem] md:h-[10rem] border border-gray-003 rounded-xl cursor-pointer"
         >
-          <div className="w-[15rem] rounded-xl">
+          <div className="w-full h-full lg:w-[20rem] md:w-[25rem] md:rounded-l-xl sm:rounded-t-xl rounded-t-xl overflow-hidden">
             <img
-              className="rounded-l-xl min-h-full object-cover"
+              className=" min-h-full object-cover"
               src={plan.imageUrl || testImage}
-              alt="방썸네일"
+              alt="thumbnail"
             />
           </div>
-          <div className="ml-12 w-[31rem]">
-            <div className="mt-4 font-bold text-2xl">{plan.shareName}</div>
-            <div className="mt-1 text-lg">
+          <div className="md:ml-6 w-full md:w-[34rem]">
+            <div className="lg:mt-8 md:mt-4 mt-8 text-center md:text-left font-bold xl:text-3xl lg:text-2xl md:text-lg text-xl">
+              {plan.shareName}
+            </div>
+            <div className="xl:mt-3 lg:mt-2 md:mt-1 mt-4 text-center md:text-left xl:text-2xl lg:text-xl md:text-lg text-xl">
               {plan.travelStartDate} ~ {plan.travelEndDate}
             </div>
-            <div className="mt-6 text-[0.8rem] text-gray-002">
+            <div className="my-4 xl:mt-10 lg:mt-6 md:mt-4 md:mr-4 text-center md:text-left xl:text-sm lg:text-[0.8rem] md:text-[0.7rem] text-[0.6rem] text-gray-002">
               여행 일정은 입장코드를 공유 받은 인원만 입장 가능합니다.
             </div>
           </div>
-          <div className="flex justify-center items-center w-12 rounded-r-xl bg-blue-002 transition-all duration-100 ease-out group-hover:w-20">
-            <RightArrow width={20} height={20} fill="#FFFFFF" />
+          <div className="flex justify-center items-center w-full md:w-20 py-2 md:py-0 rounded-b-xl md:rounded-r-xl md:rounded-bl-none bg-blue-002 transition-all duration-100 ease-out md:group-hover:w-24">
+            <RightArrow
+              width={20}
+              height={20}
+              fill="#FFFFFF"
+            />
           </div>
         </Link>
       ))}

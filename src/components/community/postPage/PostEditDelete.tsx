@@ -6,13 +6,7 @@ const PostEditDelete = ({ postId }: { postId: number }) => {
   const navigate = useNavigate();
 
   const handleUpdate = async () => {
-    Swal.fire({
-      title: "게시글 수정하기 페이지로 이동합니다",
-      icon: "info",
-      confirmButtonText: "확인",
-    }).then(() => {
-      navigate(`/community/${postId}/edit`);
-    });
+    navigate(`/community/${postId}/edit`);
   };
 
   const handleDelete = async () => {
@@ -37,13 +31,13 @@ const PostEditDelete = ({ postId }: { postId: number }) => {
   return (
     <div className="flex">
       <button
-        className="absolute right-[106px] px-2 py-1 min-w-max h-[35px] border-r-2 text-gray-001"
+        className="absolute right-[106px] p-1 min-w-max h-[35px] text-gray-001"
         onClick={handleUpdate}
       >
         수정
       </button>
       <button
-        className="absolute right-[60px] px-2 py-1 min-w-max h-[35px] text-gray-001"
+        className="absolute right-[60px] p-1 min-w-max h-[35px] text-gray-001"
         onClick={handleDelete}
       >
         삭제

@@ -1,10 +1,9 @@
 import html2canvas from "html2canvas";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Swal from "sweetalert2";
 import { sendImage } from "../../../api/kakaoLoginAPI";
-import { recommendScheduleAPI } from "../../../api/recommendAPI";
 import {
   completeScheduleAPI,
   getScheduleAPI,
@@ -12,6 +11,7 @@ import {
 } from "../../../api/scheduleAPI";
 import { uploadImageAPI } from "../../../api/shareRoomAPI";
 import { ReactComponent as Recommend } from "../../../assets/arrowDirection.svg";
+import useSchedule from "../../../hooks/useSchdule";
 import { disabledState } from "../../../state/componentOpenState";
 import {
   initialValue,
@@ -19,6 +19,7 @@ import {
 } from "../../../state/selectStartPoint";
 import { travelDate } from "../../../state/travelDate";
 import { ISchedule, schedule } from "../../../store/schedule";
+import { scheduleList } from "../../../store/scheduleList";
 import { selectedDay } from "../../../store/selectedDay";
 import { shareRoomInfo } from "../../../store/shareRoomInfo";
 import { IPlanSchedule } from "../../../type/newPost";
@@ -28,24 +29,26 @@ import NotExistsSchedule from "./NotExistsSchedule";
 const ScheduleLists = () => {
   const { shareRoomID } = useParams();
   const travelDates = useRecoilValue(travelDate);
-  const [scheduleInfo, setScheduleInfo] = useRecoilState(schedule);
+  const setScheduleInfo = useSetRecoilState(schedule);
   const disabledStatus = useRecoilValue(disabledState);
   const selectedPlanDay = useRecoilValue(selectedDay);
   const shareRoom = useRecoilValue(shareRoomInfo);
+  const schedules = useRecoilValue(scheduleList);
   const [scheduleAfterComplete, setScheduleAfterComplete] = useState<
     IPlanSchedule[]
   >([]);
   const [selectedStartPoint, setSelectedStartPoint] =
     useRecoilState(selecteStartPoint);
+  const { recommendRoute, completeRoute } = useSchedule();
   const imageElement = useRef<HTMLDivElement>(null);
 
   const isExists =
-    scheduleInfo !== "" && scheduleInfo.destinationDtoList.length !== 0;
+    schedules[selectedPlanDay.planDay - 1] !== undefined &&
+    schedules[selectedPlanDay.planDay - 1].destinationDtoList.length !== 0;
 
   const validation = async (type: string) => {
     if (type === "complete") {
       const response = await getScheduleAPI(Number(shareRoomID));
-
       const data = response?.data;
 
       if (data !== undefined) {
@@ -89,11 +92,7 @@ const ScheduleLists = () => {
           cancelButtonText: "취소",
         }).then((result) => {
           if (result.isConfirmed) {
-            recommendScheduleAPI(selectedStartPoint, Number(shareRoomID));
-            Swal.fire({
-              icon: "success",
-              text: "추천 경로로 일정이 설정되었습니다.",
-            });
+            recommendRoute();
           }
         });
   };
@@ -136,6 +135,7 @@ const ScheduleLists = () => {
         }
 
         await uploadImageAPI(formData);
+        completeRoute();
 
         Swal.fire({
           imageUrl: imgUrl,
@@ -191,7 +191,6 @@ const ScheduleLists = () => {
 
   useEffect(() => {
     const initialPlanDate = shareRoom.travelStartDate;
-
     if (initialPlanDate !== "") {
       getScheduleByDate();
     }

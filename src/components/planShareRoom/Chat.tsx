@@ -5,6 +5,8 @@ import { Stomp } from "@stomp/stompjs";
 import { getMemberByAccessToken } from "../../api/memberAPI";
 import { useRecoilValue } from "recoil";
 import { shareRoomInfo } from "../../store/shareRoomInfo";
+import { sendTokenEnteringShareRoom } from "../../api/shareRoomAPI";
+import { getChatRoomEnterMessage } from "../../api/chatAPI";
 
 declare global {
   interface Window {
@@ -16,6 +18,7 @@ interface IChatMessage {
   nickName: string;
   shareId: number;
   message: string;
+  shareRoomEnterId: number;
   type: "ENTER" | "JOIN" | "TALK";
 }
 
@@ -25,6 +28,7 @@ const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<IChatMessage[]>([]);
   const [username, setUsername] = useState<string>("");
+  const [shareRoomEnterId, setShareRoomEnterId] = useState<number>(0);
   const shareRoomData = useRecoilValue(shareRoomInfo);
   const shareId: number = shareRoomData.shareId;
   const [composing, setComposing] = useState(false);
@@ -50,34 +54,53 @@ const Chat = () => {
       setUsername(userName);
 
       if (shareId) {
-        console.log(shareId);
+        const enterData = await sendTokenEnteringShareRoom(shareId);
+        if (enterData && enterData.shareRoomEnterId) {
+          setShareRoomEnterId(enterData.shareRoomEnterId);
+        }
       }
     };
 
-    fetchDetails()
-      .then(() => console.log("fetchDetails has completed"))
-      .catch((error) => console.error("Failed to fetch details:", error));
+    if (shareId !== 0) {
+      fetchDetails()
+        .then(() => console.log("fetchDetails has completed"))
+        .catch((error) => console.error("Failed to fetch details:", error));
+    }
   }, [shareId]);
 
-  const connect = () => {
+  const connect = async () => {
     const socketFactory = () =>
-      new window.SockJS("http://43.200.76.174:8080/ws-stomp");
+      new window.SockJS(`${import.meta.env.VITE_CHAT_URL}`);
     const client = Stomp.over(socketFactory);
-    stompClient.current = client; // Update the stompClient reference
+    stompClient.current = client;
     client.connect({}, onConnected, onError);
   };
 
-  const onConnected = () => {
-    stompClient.current?.subscribe(
+  const onConnected = async () => {
+    const previousShareId = sessionStorage.getItem("lastEnteredChatRoom");
+    if (previousShareId !== String(shareId)) {
+      stompClient.current?.send(
+        "/pub/chat/message",
+        {},
+        JSON.stringify({
+          shareId: shareId,
+          nickName: username,
+          shareRoomEnterId: shareRoomEnterId,
+          type: "ENTER",
+        })
+      );
+      sessionStorage.setItem("lastEnteredChatRoom", String(shareId));
+    }
+
+    await stompClient.current?.subscribe(
       `/sub/share-room/${shareId}`,
       onMessageReceived
     );
 
-    stompClient.current?.send(
-      "/pub/chat/message",
-      {},
-      JSON.stringify({ shareId: shareId, nickName: username, type: "ENTER" })
-    );
+    const pastMessages = await getChatRoomEnterMessage(shareId);
+    if (pastMessages && Array.isArray(pastMessages)) {
+      setMessages(pastMessages);
+    }
   };
 
   const onError = (error: any) => {
@@ -91,6 +114,7 @@ const Chat = () => {
     if (message && stompClient.current) {
       const chatMessage = {
         shareId: shareId,
+        shareRoomEnterId: shareRoomEnterId,
         nickName: username!,
         message: message,
         type: "TALK",
@@ -122,10 +146,6 @@ const Chat = () => {
 
   const onMessageReceived = (payload: any) => {
     const message: IChatMessage = JSON.parse(payload.body);
-
-    if (message.type === "JOIN") {
-      message.message = message.nickName + " joined!";
-    }
 
     setMessages((prevMessages) => [...prevMessages, message]);
   };
@@ -211,7 +231,7 @@ const Chat = () => {
                 onKeyDown={onEnterPress}
                 onCompositionStart={onCompositionStart}
                 onCompositionEnd={onCompositionEnd}
-                className="p-1 mb-2 ml-3 w-full h-[4rem] rounded-l-lg"
+                className="p-1 mb-2 ml-3 w-full h-[4rem] rounded-l-lg outline-none"
                 style={{ resize: "none" }}
               />
               <button

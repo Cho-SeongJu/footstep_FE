@@ -5,11 +5,13 @@ const SignInAndUp = () => {
   const saveLastLocation = useLastLocation();
 
   return (
-    <div className="flex justify-center items-center w-44 h-[4rem] border-x font-bold hover:bg-orange-005 hover:text-black-002 transition-all duration-150">
+    <div
+      className="flex justify-center items-center px-3 py-4 rounded-sm font-bold hover:bg-sky-005 hover:text-white transition-all duration-150"
+      onClick={saveLastLocation}
+    >
       <Link
         to="/login"
-        className="font-medium text-[1.05rem] cursor-pointer"
-        onClick={() => saveLastLocation()}
+        className="font-bold 2xl:text-xl xl:text-xl lg:text-[1.5rem] md:text-[1.5rem] sm:text-[1.5rem] cursor-pointer"
       >
         로그인 / 회원가입
       </Link>

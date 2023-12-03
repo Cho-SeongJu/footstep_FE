@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { ReactComponent as BottomArrow } from "../../../assets/bottomArrow.svg";
-import { shareRoomInfo } from "../../../store/shareRoomInfo";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { calculateDays } from "../../../utils/calculateDays";
-import { selectedDay } from "../../../store/selectedDay";
-import { schedule } from "../../../store/schedule";
-import { getScheduleByDateAPI } from "../../../api/scheduleAPI";
-import { useParams } from "react-router-dom";
 import { disabledState } from "../../../state/componentOpenState";
+import { selectedDay } from "../../../store/selectedDay";
+import { shareRoomInfo } from "../../../store/shareRoomInfo";
+import { calculateDays } from "../../../utils/calculateDays";
 
 interface IPlanDates {
   month: number;
@@ -19,12 +16,9 @@ interface IPlanDates {
 
 const ScheduleDaySelect = () => {
   const [selectedDate, setSelectedDate] = useRecoilState(selectedDay);
-  const setScheduleBytDate = useSetRecoilState(schedule);
   const [daysOpenState, setDaysOpenState] = useState<boolean>(false);
   const [planDates, setPlanDates] = useState<IPlanDates[]>([]);
   const [disabledStatus, setDisabledStatus] = useRecoilState(disabledState);
-  const { shareRoomID } = useParams<string>();
-
   const getShareRoomInfo = useRecoilValue(shareRoomInfo);
 
   const onClickDisabledHandler = () => {
@@ -35,6 +29,7 @@ const ScheduleDaySelect = () => {
       buttonSection: !disabledStatus.buttonSection,
       placeSection: !disabledStatus.placeSection,
       memo: !disabledStatus.memo,
+      showScheduleRoute: !disabledStatus.showScheduleRoute,
     });
   };
 
@@ -46,11 +41,6 @@ const ScheduleDaySelect = () => {
   const onClickselectDay = async (day: number) => {
     onClickDisabledHandler();
     setSelectedDate(planDates[day - 1]);
-    const response = await getScheduleByDateAPI(
-      Number(shareRoomID),
-      planDates[day - 1].planDate
-    );
-    setScheduleBytDate(response?.data);
     setDaysOpenState(false);
   };
 

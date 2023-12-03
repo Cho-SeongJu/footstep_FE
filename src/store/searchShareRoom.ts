@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { IShareRoom } from "../type/shareRoom";
+import { IShareRoom } from "../type/planShareRoom";
 
 const initialValue: IShareRoom = {
   endPoint: "",
@@ -10,6 +10,7 @@ const initialValue: IShareRoom = {
   startPoint: "",
   travelEndDate: "",
   travelStartDate: "",
+  hostFlag: true,
 };
 
 export const searchShareRoomData = atom({

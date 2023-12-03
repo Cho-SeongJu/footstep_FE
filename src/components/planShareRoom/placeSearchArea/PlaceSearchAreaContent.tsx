@@ -1,15 +1,15 @@
+import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { recommendState } from "../../../state/recommendState";
-import { IPlaceContentDown } from "../../../type/shareRoom";
 import PlaceRecommendList from "./PlaceRecommendList";
 import PlaceSearchLists from "./PlaceSearchLists";
-import { useEffect } from "react";
 
-const PlaceSearchAreaContent = ({
-  panTo,
-  addDestination,
-  placePagination,
-}: IPlaceContentDown) => {
+interface IProps {
+  readonly panTo: (placeX: number, placeY: number, index: number) => void;
+  readonly placePagination: any;
+}
+
+const PlaceSearchAreaContent = ({ panTo, placePagination }: IProps) => {
   const [recommendStatus, setRecommendStats] = useRecoilState(recommendState);
 
   const onClickSetRecommendStatus = () => {
@@ -36,15 +36,9 @@ const PlaceSearchAreaContent = ({
           장소추천받기
         </label>
       </div>
-      {recommendStatus && (
-        <PlaceRecommendList
-          addDestination={addDestination}
-          panTo={panTo}
-        />
-      )}
+      {recommendStatus && <PlaceRecommendList panTo={panTo} />}
       <PlaceSearchLists
         panTo={panTo}
-        addDestination={addDestination}
         placePagination={placePagination}
         recommendStatus={recommendStatus}
       />

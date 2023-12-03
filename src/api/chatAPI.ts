@@ -1,11 +1,14 @@
 import axios from "axios";
 import { getCookie } from "../utils/cookie";
-
-const KEY = "accessToken";
+import { checkTokenAPI, refreshTokenAPI } from "./tokenAPI";
 
 export const createChatRoom = async (name: string) => {
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
 
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
   try {
     const response = await axios.post("/api/chat/room", null, {
       params: {
@@ -23,7 +26,12 @@ export const createChatRoom = async (name: string) => {
 };
 
 export const getChatRooms = async () => {
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.get("/api/chat/rooms", {
@@ -43,7 +51,12 @@ export const getChatRooms = async () => {
 };
 
 export const getChatRoomDetail = async (roomId: string) => {
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.get(`/api/chat/room/${roomId}`, {
@@ -59,5 +72,32 @@ export const getChatRoomDetail = async (roomId: string) => {
     }
   } catch (error) {
     console.error(`채팅방 정보를 가져오지 못했습니다 ${roomId}`, error);
+  }
+};
+
+export const getChatRoomEnterMessage = async (shareId: number) => {
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
+
+  try {
+    const response = await axios.get(`/api/api/share-room/${shareId}/enter`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      console.error(
+        `채팅방 입장 정보를 받아오지 못했습니다 ${shareId}`,
+        response
+      );
+    }
+  } catch (error) {
+    console.error(`채팅방 입장 정보를 받아오지 못했습니다 ${shareId}`, error);
   }
 };

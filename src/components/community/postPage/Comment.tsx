@@ -21,7 +21,7 @@ const Comment = ({ comment, onCommentsChange }: CommentProps) => {
         const memberId = await getCurrentUserMemberId();
         setMemberId(memberId);
       } catch (error) {
-        // console.error(error);
+        alert(error);
       }
     };
 
@@ -71,43 +71,47 @@ const Comment = ({ comment, onCommentsChange }: CommentProps) => {
   };
 
   return (
-    <div className="my-2 p-2 border border-gray-002 rounded-lg">
-      {isEditMode ? (
-        <input
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
-        />
-      ) : (
-        <p className="text-md">{content}</p>
-      )}
-      <p className="text-sm text-gray-001">{comment?.memberNickname}</p>
-      {memberId === comment?.memberId && (
-        <div className="flex justify-end mt-2">
+    <>
+      <div className="py-4 border-b border-gray-004">
+        <p className="font-bold text-black-002">{comment?.memberNickname}</p>
+        <div className="my-2">
           {isEditMode ? (
-            <button
-              onClick={handleUpdate}
-              className="bg-blue-003 text-white-001 px-2 py-1 rounded mr-2 hover:bg-blue-002 transition-all duration-250"
-            >
-              저장
-            </button>
+            <input
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
           ) : (
-            <button
-              onClick={() => setEditMode(true)}
-              className="bg-blue-003 text-white-001 px-2 py-1 rounded mr-2 hover:bg-blue-002 transition-all duration-250"
-            >
-              수정
-            </button>
+            <p className="text-md">{content}</p>
           )}
-          <button
-            onClick={handleDelete}
-            className="bg-red-003 text-white-001 px-2 py-1 rounded hover:bg-red-002 transition-all duration-250"
-          >
-            삭제
-          </button>
+          {memberId === comment?.memberId && (
+            <div className="flex justify-end mt-2">
+              {isEditMode ? (
+                <button
+                  onClick={handleUpdate}
+                  className="bg-blue-003 text-white-001 px-2 py-1 rounded mr-2 hover:bg-blue-002 transition-all duration-250"
+                >
+                  저장
+                </button>
+              ) : (
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="p-1 text-sm text-gray-001"
+                >
+                  수정
+                </button>
+              )}
+              <button
+                onClick={handleDelete}
+                className="p-1 text-sm text-gray-001"
+              >
+                삭제
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

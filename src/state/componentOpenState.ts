@@ -6,6 +6,7 @@ const initialState = {
   scheduleList: false,
   buttonSection: false,
   placeSection: false,
+  showScheduleRoute: false,
   memo: false,
 };
 

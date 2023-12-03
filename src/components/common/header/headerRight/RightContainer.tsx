@@ -6,7 +6,7 @@ const RightContainer = () => {
   const [cookies] = useCookies(["accessToken"]);
 
   return (
-    <section className="flex justify-end items-center mr-32 w-[30rem] h-[4rem]">
+    <section className="flex justify-end items-center w-[30rem] h-[4rem]">
       <div className="flex items-center">
         {!cookies.accessToken ? <SignInAndUp /> : <AfterLogin />}
       </div>

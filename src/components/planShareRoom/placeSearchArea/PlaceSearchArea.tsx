@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ReactComponent as LeftArrow } from "../../../assets/leftArrow.svg";
 import { sideBarState } from "../../../state/sidebarState";
-import { IPropsSideBar } from "../../../type/shareRoom";
+import { IPropsSideBar } from "../../../type/planShareRoom";
 import PlaceSearchAreaContent from "./PlaceSearchAreaContent";
 import PlaceSearchAreaHeader from "./PlaceSearchAreaHeader";
 import { disabledState } from "../../../state/componentOpenState";
@@ -11,7 +11,6 @@ const PlaceSearchArea = ({
   placeSearch,
   panTo,
   placePagination,
-  addDestination,
 }: IPropsSideBar) => {
   const [sideBarOpenState, setSideBarOpenState] = useRecoilState(sideBarState);
   const disabledStatus = useRecoilValue(disabledState);
@@ -33,7 +32,6 @@ const PlaceSearchArea = ({
       <PlaceSearchAreaHeader placeSearch={placeSearch} />
       <PlaceSearchAreaContent
         panTo={panTo}
-        addDestination={addDestination}
         placePagination={placePagination}
       />
       <div

@@ -1,11 +1,11 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { INITIAL_SELECTED_DATES } from "../constants/initial";
-import { IShareRoom } from "../type/shareRoom";
+import { IShareRoom } from "../type/planShareRoom";
 import { ISelectedDate } from "../type/shareRoomForm";
 import { useSetRecoilState } from "recoil";
 import { travelDate } from "../state/travelDate";
 import Swal from "sweetalert2";
+import { Value } from "react-calendar/dist/cjs/shared/types";
 
 interface IClickDate {
   startDate: string;
@@ -20,14 +20,21 @@ const usePlanDate = (
   const setTravelDate = useSetRecoilState(travelDate);
   const [night, setNight] = useState<number>(0);
   const [clickCount, setClickCount] = useState<number>(0);
-  const [selectedDate, setSelectedDate] = useState<ISelectedDate>(
-    INITIAL_SELECTED_DATES
-  );
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<ISelectedDate>({
+    startDate: new Date(),
+    endDate: new Date(),
+    printStartDate: "",
+    printEndDate: "",
+    submitStartDate: "",
+    submitEndDate: "",
+    init: true,
+  });
   const [checkDate, setCheckDate] = useState<IClickDate>({
     startDate: "",
     endDate: "",
   });
+
   const calculateNights = () => {
     let startDate;
     let endDate;
@@ -71,9 +78,18 @@ const usePlanDate = (
     }
   };
 
-  const onChangeHandler = (value: Date[]) => {
-    const startDate = value[0];
-    const endDate = value[1];
+  const onChangeHandler = (value: Value) => {
+    let startDate: Date;
+    let endDate: Date;
+
+    if (Array.isArray(value)) {
+      startDate = value[0] as Date;
+      endDate = value[1] as Date;
+    } else {
+      startDate = value as Date;
+      endDate = value as Date;
+    }
+
     setSelectedDate({ ...selectedDate, startDate, endDate });
   };
 
@@ -128,6 +144,20 @@ const usePlanDate = (
     }
   };
 
+  const setDateInShareRoom = () => {
+    const printStartDate = moment(shareRoomInfo.travelStartDate).format(
+      "MM.DD"
+    );
+    const printEndDate = moment(shareRoomInfo.travelEndDate).format("MM.DD");
+    const startDate = new Date(shareRoomInfo.travelStartDate);
+    const endDate = new Date(shareRoomInfo.travelEndDate);
+    let diff = Math.abs(endDate.getTime() - startDate.getTime());
+    diff = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    setNight(diff);
+    setSelectedDate({ ...selectedDate, printStartDate, printEndDate });
+  };
+
   useEffect(() => {
     calculateNights();
   }, [shareRoomInfo]);
@@ -135,19 +165,7 @@ const usePlanDate = (
   useEffect(() => {
     if (!editStatus) {
       if (type === "inShareRoom") {
-        const printStartDate = moment(shareRoomInfo.travelStartDate).format(
-          "MM.DD"
-        );
-        const printEndDate = moment(shareRoomInfo.travelEndDate).format(
-          "MM.DD"
-        );
-        const startDate = new Date(shareRoomInfo.travelStartDate);
-        const endDate = new Date(shareRoomInfo.travelEndDate);
-        let diff = Math.abs(endDate.getTime() - startDate.getTime());
-        diff = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-        setNight(diff);
-        setSelectedDate({ ...selectedDate, printStartDate, printEndDate });
+        setDateInShareRoom();
       }
       setOpenCalendar(false);
     }

@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { ICreateShareRoomFormValue } from "../type/shareRoom";
+import { ICreateShareRoomFormValue } from "../type/planShareRoom";
 
 export const initialValue: ICreateShareRoomFormValue = {
   title: "",

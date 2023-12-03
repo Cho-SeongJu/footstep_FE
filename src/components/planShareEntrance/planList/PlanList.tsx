@@ -3,7 +3,7 @@ import PlanListHeader from "./PlanListHeader";
 
 const Plan = () => {
   return (
-    <div className="w-commonSection min-h-section mx-auto my-20">
+    <div className="flex flex-col justify-center items-center py-20 w-full">
       <PlanListHeader />
       <PlanListContent />
     </div>

@@ -19,7 +19,7 @@ const CreateComment = ({ onCommentsChange, post }: CreateCommentProps) => {
         const memberId = await getCurrentUserMemberId();
         setMemberId(memberId);
       } catch (error) {
-        // console.error(error);
+        alert(error);
       }
     };
 
@@ -27,7 +27,6 @@ const CreateComment = ({ onCommentsChange, post }: CreateCommentProps) => {
   }, []);
 
   const handleCreate = async () => {
-    // 내용 없을 때 작성 불가 처리
     if (!content.trim()) {
       Swal.fire({
         title: "댓글 내용을 입력해주세요",
@@ -36,7 +35,7 @@ const CreateComment = ({ onCommentsChange, post }: CreateCommentProps) => {
       });
       return;
     }
-    // 사용자에게 댓글 작성 확인 메시지
+
     const result = await Swal.fire({
       title: "댓글을 작성하시겠습니까?",
       icon: "question",
@@ -47,7 +46,6 @@ const CreateComment = ({ onCommentsChange, post }: CreateCommentProps) => {
 
     if (result.isConfirmed && memberId && post) {
       try {
-        console.log(memberId);
         await createComment(
           { content, communityId: post.communityId },
           memberId
@@ -60,22 +58,21 @@ const CreateComment = ({ onCommentsChange, post }: CreateCommentProps) => {
     }
   };
 
-  // 비로그인 시 댓글작성 불가
   if (!memberId) return null;
 
   return (
-    <div className="flex items-center my-2">
+    <div className="flex items-center mt-2 mb-20 border border-gray-003 rounded-lg">
       <input
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="border border-gray-002 rounded-l-lg px-4 py-1 h-[40px] w-full"
-        placeholder="댓글을 입력해주세요"
+        className="px-4 py-3 w-full rounded-l-lg outline-none placeholder:text-sm"
+        placeholder="댓글을 입력해주세요   :)"
       />
       <button
         onClick={handleCreate}
-        className="px-2 py-1 h-[40px] min-w-max rounded-r-lg bg-green-002 text-white-001 hover:bg-green-001 transition-all duration-250"
+        className="px-2 py-3 min-w-max rounded-r-lg text-gray-001 transition-all duration-250"
       >
-        작성
+        입력
       </button>
     </div>
   );

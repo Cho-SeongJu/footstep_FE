@@ -1,4 +1,4 @@
-import { IPropsPlaceSearch } from "../../../type/shareRoom";
+import { IPropsPlaceSearch } from "../../../type/planShareRoom";
 import { useRecoilState } from "recoil";
 import { selectedArea } from "../../../state/selectedArea";
 import { ADMINISTRATIVE_DISTRICT } from "../../../constants/area";

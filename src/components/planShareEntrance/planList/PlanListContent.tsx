@@ -14,8 +14,7 @@ const PlanListContent = () => {
   const [shareRooms, setShareRooms] = useRecoilState(getShareRoomList);
   const searchResult = useRecoilValue(searchShareRoomData);
 
-  // const isExists = shareRooms.length !== 0;
-  const isExists = shareRooms.length !== 0;
+  const isExists = shareRooms.totalPages !== 0;
 
   const getShareRooms = async () => {
     const result = await getIncludeShareRoomAPI();
@@ -33,9 +32,13 @@ const PlanListContent = () => {
   }, []);
 
   return (
-    <div className="mt-8 w-commonSection">
-      <div>{searchResult.shareId !== 0 && <SearchResult />}</div>
-      <div>{isExists ? <ExistsPlan /> : <NotExistsPlan />}</div>
+    <div className="mt-8 lg:w-[60rem]">
+      {searchResult.shareId !== 0 && (
+        <div>
+          <SearchResult />
+        </div>
+      )}
+      {isExists ? <ExistsPlan /> : <NotExistsPlan />}
     </div>
   );
 };

@@ -11,7 +11,7 @@ const Close = () => {
   };
 
   return (
-    <div className="flex flex-row-reverse items-center w-[24rem] h-[3rem] bg-gray-003 rounded-t-md">
+    <div className="flex flex-row-reverse items-center w-full sm:w-[24rem] h-[3rem] bg-gray-003 rounded-t-md">
       <CloseIcon
         className="mx-2 w-[25px] h-[25px] cursor-pointer"
         onClick={onClickHandler}

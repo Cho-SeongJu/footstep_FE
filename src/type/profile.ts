@@ -5,4 +5,5 @@ interface IMember {
   memberId: number;
   nickname: string;
   password: string;
+  description: string;
 }

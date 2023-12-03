@@ -7,6 +7,7 @@ const initialValue = {
   memberId: 0,
   nickname: "",
   password: "",
+  description: "",
 };
 
 export const memberInfo = atom<IMember>({

@@ -2,19 +2,25 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { ReactComponent as Address } from "../../../assets/address.svg";
 import { markerSeq } from "../../../constants/marker";
+import useSchedule from "../../../hooks/useSchdule";
 import { placeSearchResult } from "../../../store/placeSearchResult";
 import { IKakaoPlaceSearchResult } from "../../../type/kakaoMap";
-import { IPropsPlaceSearchLists } from "../../../type/shareRoom";
+
+interface IProps {
+  readonly panTo: (placeX: number, placeY: number, index: number) => void;
+  readonly placePagination: any;
+  readonly recommendStatus: boolean;
+}
 
 const PlaceSearchLists = ({
   panTo,
-  addDestination,
   placePagination,
   recommendStatus,
-}: IPropsPlaceSearchLists) => {
+}: IProps) => {
   const [placeLists, setPlaceLists] = useRecoilState(placeSearchResult);
   const [pagination, setPagination] = useState<number[]>([]);
   const [selectedPage, setSelectedPage] = useState<number>(1);
+  const { addDestination } = useSchedule();
   const isExist = placeLists.length !== 0;
 
   const setPage = () => {

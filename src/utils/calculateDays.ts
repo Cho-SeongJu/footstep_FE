@@ -1,4 +1,4 @@
-import { IShareRoom } from "../type/shareRoom";
+import { IShareRoom } from "../type/planShareRoom";
 
 interface IPlanDates {
   month: number;

@@ -6,11 +6,11 @@ import SignUpLink from "../components/login/SignUpLink";
 const LoginPage = () => {
   return (
     <div className="flex justify-center w-full min-h-screen">
-      <div className="mt-[12rem] flex flex-col w-full">
+      <div className="mt-[8rem] flex flex-col w-full">
         <LoginHeader />
         <EmailLoginForm />
-        <KakaoLoginButton />
         <SignUpLink />
+        <KakaoLoginButton />
       </div>
     </div>
   );

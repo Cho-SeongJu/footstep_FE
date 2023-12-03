@@ -1,25 +1,30 @@
 import axios from "axios";
-import { getCookie, removeCookie } from "../utils/cookie";
-import { refreshTokenAPI } from "./shareRoomAPI";
-import Swal from "sweetalert2";
+import { errorMsg } from "../utils/errorMsgAlert";
+import { getCookie } from "../utils/cookie";
+import { checkTokenAPI, refreshTokenAPI } from "./tokenAPI";
 
 interface IBodyDate {
   planDate: string;
   destinationCategoryCode: string;
   destinationName: string;
   destinationAddress: string;
-  lng: number;
-  lat: number;
+  lng: string;
+  lat: string;
   seq: number;
 }
 
 export const addDestinationAPI = async (
-  shareRoomID: string,
+  shareRoomID: number,
   bodyData: IBodyDate
 ) => {
   const id = Number(shareRoomID);
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.post(
@@ -35,21 +40,7 @@ export const addDestinationAPI = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorCode = error.response?.data.errorCode;
-      if (errorCode === "EXPIRED_ACCESS_TOKEN") {
-        removeCookie("accessToken");
-        refreshTokenAPI();
-        addDestinationAPI(shareRoomID, bodyData);
-      } else if (errorCode === "ALREADY_DESTINATION") {
-        Swal.fire({
-          icon: "error",
-          text: "이미 등록된 목적지 입니다.",
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          text: "처리 중 오류가 발생하였습니다.",
-        });
-      }
+      errorMsg(errorCode);
     }
   }
 };
@@ -58,8 +49,12 @@ export const deleteDestinationAPI = async (
   shareRoomID: number,
   destinationId: number
 ) => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.delete(
@@ -74,21 +69,7 @@ export const deleteDestinationAPI = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorCode = error.response?.data.errorCode;
-      if (errorCode === "EXPIRED_ACCESS_TOKEN") {
-        removeCookie("accessToken");
-        refreshTokenAPI();
-        deleteDestinationAPI(shareRoomID, destinationId);
-      } else if (errorCode === "NOT_FIND_DESTINATION_ID") {
-        Swal.fire({
-          icon: "error",
-          text: "이미 삭제된 목적지 입니다.",
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          text: "처리 중 오류가 발생하였습니다. 잠시 후에 다시 시도해주세요.",
-        });
-      }
+      errorMsg(errorCode);
     }
   }
 };

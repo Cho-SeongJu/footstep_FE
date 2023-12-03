@@ -1,5 +1,5 @@
 import moment from "moment";
-import { ICreateShareRoomFormValue } from "../type/shareRoom";
+import { ICreateShareRoomFormValue } from "../type/planShareRoom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -8,7 +8,6 @@ const MySwal = withReactContent(Swal);
 export const formValidationCheck = (form: ICreateShareRoomFormValue) => {
   let checkResult = false;
   let msg = "";
-
   const today = moment(new Date()).format("YYYY-MM-DD");
 
   if (form.title.length === 0) {

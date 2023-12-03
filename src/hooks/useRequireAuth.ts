@@ -1,22 +1,30 @@
-import { useEffect } from "react";
-import { useCookies } from "react-cookie";
-import { useNavigate, useLocation } from "react-router-dom";
-import Swal from "sweetalert2";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getCookie } from "../utils/cookie";
 
-export const useRequireAuth = (restrictedPages = ["/login"]) => {
-  const [cookies] = useCookies(["accessToken"]);
-  const navigate = useNavigate();
+const restrictedPages = [
+  "/planShareEntrance",
+  "/user/profile",
+  "/user/profile/edit",
+  "/user/profile/passwordEdit",
+  "/user/profile/secession",
+  "/community/newpost",
+];
+
+export const useRequireAuth = () => {
+  const { shareRoomID } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const token = getCookie("accessToken");
 
-  useEffect(() => {
-    if (restrictedPages.includes(location.pathname) && !cookies.accessToken) {
-      Swal.fire({
-        icon: "info",
-        title: "로그인 후 이용 가능합니다.",
-        confirmButtonText: "확인",
-      }).then(() => {
-        navigate("/login");
-      });
+  const checkLocationPath = () => {
+    const isIncludePath =
+      location.pathname.includes(`/planShareRoom/${shareRoomID}`) ||
+      (restrictedPages.includes(location.pathname) && token !== undefined);
+
+    if (!isIncludePath) {
+      navigate("/login");
     }
-  }, [cookies, navigate, restrictedPages, location]);
+  };
+
+  return { checkLocationPath };
 };

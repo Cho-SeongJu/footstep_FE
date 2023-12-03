@@ -12,6 +12,7 @@ import NewPost from "./pages/NewPost";
 import EditPost from "./components/community/postPage/EditPost";
 import PostPage from "./pages/PostPage";
 import KakaoSendImage from "./components/planShareRoom/KaKaoSendImage";
+import SuccessSignUp from "./components/signUp/SuccessSignUp";
 
 const App = () => {
   return (
@@ -35,6 +36,10 @@ const App = () => {
       <Route
         path="/user/signup"
         element={<SignUp />}
+      />
+      <Route
+        path="/user/welcome"
+        element={<SuccessSignUp />}
       />
       <Route
         path="/user/profile"

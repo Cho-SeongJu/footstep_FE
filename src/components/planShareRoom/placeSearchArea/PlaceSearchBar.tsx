@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { ReactComponent as SearchIcon } from "../../../assets/search.svg";
 import { selectedArea } from "../../../state/selectedArea";
-import { IPropsPlaceSearch } from "../../../type/shareRoom";
+import { IPropsPlaceSearch } from "../../../type/planShareRoom";
 
 const PlaceSearchBar = ({ placeSearch }: IPropsPlaceSearch) => {
   const selected = useRecoilValue(selectedArea);

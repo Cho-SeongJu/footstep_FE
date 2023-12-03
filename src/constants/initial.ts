@@ -14,13 +14,3 @@ export const INITIAL_SHARE_ROOM_INFO = {
   travelEndDate: "",
   travelStartDate: "",
 };
-
-export const INITIAL_SELECTED_DATES = {
-  startDate: new Date(),
-  endDate: new Date(),
-  printStartDate: "",
-  printEndDate: "",
-  submitStartDate: "",
-  submitEndDate: "",
-  init: true,
-};

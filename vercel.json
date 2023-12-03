@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/api/:path*",
+      "destination": "https://foot-step.site/api/:path*"
+    },
+    { "source": "/:path*", "destination": "/" }
+  ]
+}

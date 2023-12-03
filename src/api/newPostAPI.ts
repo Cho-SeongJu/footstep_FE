@@ -1,18 +1,23 @@
 import axios from "axios";
 import { IPlanSchedule } from "../type/newPost";
 import { getCookie } from "../utils/cookie";
-import { getShareRoomInfoAPI, refreshTokenAPI } from "./shareRoomAPI";
+import { getShareRoomDetailAPI } from "./shareRoomAPI";
+import { checkTokenAPI, refreshTokenAPI } from "./tokenAPI";
 
 export const getPlanScheduleAPI = async (
   shareId: number
 ): Promise<IPlanSchedule[]> => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
+
   try {
-    const roomInfo = await getShareRoomInfoAPI(String(shareId));
+    const roomInfo = await getShareRoomDetailAPI(Number(shareId));
     const startDate = roomInfo.travelStartDate;
     const endDate = roomInfo.travelEndDate;
-    console.log(startDate, endDate);
     const response = await axios.get(
       `/api/api/share-room/${shareId}/schedule?startDate=${startDate}&endDate=${endDate}`,
       {
@@ -21,15 +26,9 @@ export const getPlanScheduleAPI = async (
         },
       }
     );
-    console.log(response);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        await refreshTokenAPI();
-        return getPlanScheduleAPI(shareId);
-      }
     }
     throw error;
   }
@@ -42,8 +41,12 @@ export const postCommunityAPI = async (
   isPublic: boolean,
   content: string
 ): Promise<any> => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.post(
@@ -63,19 +66,18 @@ export const postCommunityAPI = async (
     console.log(response.data);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        await refreshTokenAPI();
-        return postCommunityAPI(memberId, shareId, title, isPublic, content);
-      }
     }
     throw error;
   }
 };
 
 export const getMemberIdAPI = async (): Promise<number> => {
-  const KEY = "accessToken";
-  const token = getCookie(KEY);
+  let token = getCookie("accessToken");
+  const isAvailableToken = await checkTokenAPI(token);
+
+  if (!isAvailableToken.isValid) {
+    token = await refreshTokenAPI();
+  }
 
   try {
     const response = await axios.get(`/api/api/members/${token}`, {
@@ -86,11 +88,6 @@ export const getMemberIdAPI = async (): Promise<number> => {
     return response.data.memberId;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const responseErrorCode = error.response?.data.code;
-      if (responseErrorCode === "EXPIRED_ACCESS_TOKEN") {
-        await refreshTokenAPI();
-        return getMemberIdAPI();
-      }
     }
     throw error;
   }

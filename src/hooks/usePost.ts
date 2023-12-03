@@ -8,14 +8,14 @@ export const usePost = () => {
   const { communityId } = useParams<{ communityId: string }>();
 
   const onCommentsChange = async () => {
-    if (!communityId) return; // communityId가 없을 때 함수를 종료
+    if (!communityId) return;
     const data = await getPostAPI(Number(communityId));
     setPost(data);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!communityId) return; // communityId가 없을 때 처리
+      if (!communityId) return;
 
       try {
         const data = await getPostAPI(Number(communityId));
